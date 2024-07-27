@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 const VerifySignUp = () => {
   const navigate = useNavigate();
   const [otp, setOtp] = useState<string[]>(new Array(8).fill(""));
-  const email = typeof window !== "undefined" && localStorage.getItem("email");
+  const email = localStorage.getItem("email") || "example@gmail.com";
   const [isLoading, setIsLoading] = useState(false);
   const { showErrorMessage } = Toastify();
 
@@ -34,7 +34,7 @@ const VerifySignUp = () => {
 
   return (
     <>
-      <Box title="Verify your email" height={453}>
+      <Box title="Verify your email">
         <div className="text-center">
           <p>Enter the 8 digit code you have received on</p>
           <p className="font-medium">{email ? modifyEmail(email) : ""}</p>

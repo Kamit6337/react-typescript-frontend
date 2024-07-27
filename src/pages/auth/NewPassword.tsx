@@ -6,13 +6,10 @@ import Box from "@/components/custom/Box";
 import Input from "@/components/custom/Input";
 import { Button } from "@/components/ui/button";
 import Loading from "@/lib/Loading";
-import { Link, useNavigate } from "react-router-dom";
-import environment from "@/utils/environment";
+import { useNavigate } from "react-router-dom";
 
 const schema = z
   .object({
-    name: z.string().min(1, "Name must be provided"),
-    email: z.string().min(1, "Email must me provided"),
     password: z.string().min(8, "Password should at least 8 character"),
     confirmPassword: z.string().min(1, "Confirm password is required"),
   })
@@ -21,7 +18,7 @@ const schema = z
     path: ["confirmPassword"], // Set the path of the error
   });
 
-const SignUp = () => {
+const NewPassword = () => {
   const navigate = useNavigate();
   const { showErrorMessage } = Toastify();
 
@@ -32,8 +29,6 @@ const SignUp = () => {
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: "",
-      email: "",
       password: "",
       confirmPassword: "",
     },
@@ -52,42 +47,10 @@ const SignUp = () => {
     }
   };
 
-  const googleOAuth = () => {
-    const url = `${environment.SERVER_URL}/auth/google`;
-    const openWindow = window.open(url, "_self");
-
-    if (!openWindow) {
-      showErrorMessage({
-        message:
-          "Error in Google OAuth login. Try login with Email and Password",
-      });
-    } else {
-      openWindow.onerror = () => {
-        showErrorMessage({
-          message:
-            "Error in Google OAuth login. Try login with Email and Password",
-        });
-      };
-    }
-  };
-
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Box title="Create Your Account" gap={20}>
-          <Input
-            name="name"
-            title="Name"
-            register={register}
-            error={errors.name?.message}
-          />
-          <Input
-            name="email"
-            type="email"
-            title="Email"
-            register={register}
-            error={errors.email?.message}
-          />
+        <Box title="Create New Password" gap={30}>
           <Input
             name="password"
             type="password"
@@ -103,20 +66,8 @@ const SignUp = () => {
             error={errors.confirmPassword?.message}
           />
           <Button disabled={isSubmitting} className="w-full">
-            {isSubmitting ? <Loading /> : "Create Account"}
+            {isSubmitting ? <Loading /> : "Submit"}
           </Button>
-          <div className="flex items-center gap-3">
-            <p className="text-light_black">Have an Account?</p>
-            <button className="font-semibold uppercase tracking-wider">
-              <Link to={`/login`}>Login</Link>
-            </button>
-          </div>
-          <div className="btn_google_oauth" onClick={googleOAuth}>
-            <div className="">
-              Signup with{" "}
-              <span className="font-semibold tracking-wider">Google</span>
-            </div>
-          </div>
         </Box>
       </form>
       <ToastContainer />
@@ -124,4 +75,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default NewPassword;

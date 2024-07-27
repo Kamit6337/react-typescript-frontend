@@ -7,6 +7,8 @@ import Input from "@/components/custom/Input";
 import { Button } from "@/components/ui/button";
 import Loading from "@/lib/Loading";
 import { Link, useNavigate } from "react-router-dom";
+import { postAuthReq } from "@/utils/api/authApi";
+import environment from "@/utils/environment";
 
 const schema = z.object({
   email: z.string().min(1, "Email must me provided"),
@@ -29,23 +31,43 @@ const Login = () => {
     },
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
-      navigate("/login");
+      await postAuthReq("/login", values);
+      navigate("/");
     } catch (error) {
       showErrorMessage({
         message:
           error instanceof Error
-            ? error.message
+            ? error?.message
             : "Something went wrong. Please try later",
       });
+    }
+  };
+
+  const googleOAuth = () => {
+    const url = `${environment.SERVER_URL}/auth/google`;
+    const openWindow = window.open(url, "_self");
+
+    if (!openWindow) {
+      showErrorMessage({
+        message:
+          "Error in Google OAuth login. Try login with Email and Password",
+      });
+    } else {
+      openWindow.onerror = () => {
+        showErrorMessage({
+          message:
+            "Error in Google OAuth login. Try login with Email and Password",
+        });
+      };
     }
   };
 
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Box title="Login" height={691} gap={30}>
+        <Box title="Login" gap={30}>
           <div className="space-y-1 text-center">
             <p className="text-2xl font-medium">Welcome back to ECOMMERCE</p>
             <p>The next gen business marketplace</p>
@@ -67,11 +89,17 @@ const Login = () => {
           <Button disabled={isSubmitting} className="w-full">
             {isSubmitting ? <Loading /> : "Login"}
           </Button>
-          <div className="mt-3 flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <p className="text-light_black">Don’t have an Account?</p>
             <button className="font-semibold uppercase tracking-wider">
               <Link to={"/signup"}>Sign Up</Link>
             </button>
+          </div>
+          <div className="btn_google_oauth" onClick={googleOAuth}>
+            <div className="">
+              Login with{" "}
+              <span className="font-semibold tracking-wider">Google</span>
+            </div>
           </div>
         </Box>
       </form>
