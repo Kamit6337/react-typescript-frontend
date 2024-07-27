@@ -6,6 +6,8 @@ import { useState } from "react";
 import OtpInput from "./OtpInput";
 import modifyEmail from "@/utils/javascript/modifyEmail";
 import { useNavigate } from "react-router-dom";
+import { postAuthReq } from "@/utils/api/authApi";
+import { Helmet } from "react-helmet";
 
 const VerifySignUp = () => {
   const navigate = useNavigate();
@@ -18,11 +20,9 @@ const VerifySignUp = () => {
     try {
       setIsLoading(true);
       const modifyOtp = otp.join("");
-
-      console.log(modifyOtp);
-
+      await postAuthReq("/signup/verify", { otp: modifyOtp });
       localStorage.removeItem("email");
-      navigate("/");
+      navigate("/", { state: { msg: "Successfully Signup" } });
     } catch (error) {
       showErrorMessage({
         message: "Something went wrong. Please try later",
@@ -34,6 +34,10 @@ const VerifySignUp = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Verify</title>
+        <meta name="discription" content="Signup Verify page of this project" />
+      </Helmet>
       <Box title="Verify your email">
         <div className="text-center">
           <p>Enter the 8 digit code you have received on</p>

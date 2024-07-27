@@ -9,6 +9,7 @@ import Loading from "@/lib/Loading";
 import { Link, useNavigate } from "react-router-dom";
 import { postAuthReq } from "@/utils/api/authApi";
 import environment from "@/utils/environment";
+import { Helmet } from "react-helmet";
 
 const schema = z.object({
   email: z.string().min(1, "Email must me provided"),
@@ -34,7 +35,7 @@ const Login = () => {
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
       await postAuthReq("/login", values);
-      navigate("/");
+      navigate("/", { state: { msg: "Successfully logged in" } });
     } catch (error) {
       showErrorMessage({
         message:
@@ -66,6 +67,10 @@ const Login = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Login</title>
+        <meta name="discription" content="Login page of this project" />
+      </Helmet>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box title="Login" gap={30}>
           <div className="space-y-1 text-center">

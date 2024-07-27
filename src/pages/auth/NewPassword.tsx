@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Toastify, { ToastContainer } from "@/lib/Toastify";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -6,7 +7,9 @@ import Box from "@/components/custom/Box";
 import Input from "@/components/custom/Input";
 import { Button } from "@/components/ui/button";
 import Loading from "@/lib/Loading";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { postAuthReq } from "@/utils/api/authApi";
+import { Helmet } from "react-helmet";
 
 const schema = z
   .object({
@@ -20,7 +23,10 @@ const schema = z
 
 const NewPassword = () => {
   const navigate = useNavigate();
-  const { showErrorMessage } = Toastify();
+  const { showErrorMessage, showSuccessMessage } = Toastify();
+
+  const token = useSearchParams()[0].get("token");
+  const email = useSearchParams()[0].get("email");
 
   const {
     register,
@@ -34,21 +40,32 @@ const NewPassword = () => {
     },
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (values: z.infer<typeof schema>) => {
+    const { confirmPassword, ...rest } = values;
+
+    const data = { ...rest, email, token };
+
     try {
-      navigate("/signup/verify");
+      const response = await postAuthReq("/newPassword", data);
+      showSuccessMessage({ message: response.message });
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (error) {
+      console.log("error", error);
       showErrorMessage({
         message:
-          error instanceof Error
-            ? error?.message
-            : "Something went wrong. Please try later",
+          error instanceof Error ? error?.message : "Something went wrong",
       });
     }
   };
 
   return (
     <>
+      <Helmet>
+        <title>New Password</title>
+        <meta name="discription" content="New Password page of this project" />
+      </Helmet>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box title="Create New Password" gap={30}>
           <Input

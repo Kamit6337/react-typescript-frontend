@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Toastify, { ToastContainer } from "@/lib/Toastify";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import Loading from "@/lib/Loading";
 import { Link, useNavigate } from "react-router-dom";
 import environment from "@/utils/environment";
+import { postAuthReq } from "@/utils/api/authApi";
+import { Helmet } from "react-helmet";
 
 const schema = z
   .object({
@@ -39,15 +42,17 @@ const SignUp = () => {
     },
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (values: z.infer<typeof schema>) => {
+    const { confirmPassword, ...data } = values;
     try {
+      await postAuthReq("/signup", data);
+      localStorage.setItem("email", data.email);
       navigate("/signup/verify");
     } catch (error) {
+      console.log("error", error);
       showErrorMessage({
         message:
-          error instanceof Error
-            ? error?.message
-            : "Something went wrong. Please try later",
+          error instanceof Error ? error?.message : "Something went wrong",
       });
     }
   };
@@ -73,6 +78,10 @@ const SignUp = () => {
 
   return (
     <>
+      <Helmet>
+        <title>SignUp</title>
+        <meta name="discription" content="Sign up page of this project" />
+      </Helmet>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box title="Create Your Account" gap={20}>
           <Input

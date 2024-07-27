@@ -7,6 +7,8 @@ import Input from "@/components/custom/Input";
 import { Button } from "@/components/ui/button";
 import Loading from "@/lib/Loading";
 import { useNavigate } from "react-router-dom";
+import { postAuthReq } from "@/utils/api/authApi";
+import { Helmet } from "react-helmet";
 
 const schema = z.object({
   email: z.string().min(1, "Email must me provided"),
@@ -14,7 +16,7 @@ const schema = z.object({
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const { showErrorMessage } = Toastify();
+  const { showErrorMessage, showSuccessMessage } = Toastify();
 
   const {
     register,
@@ -27,14 +29,18 @@ const ForgotPassword = () => {
     },
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
-      navigate("/login");
+      const response = await postAuthReq("/forgot", values);
+      showSuccessMessage({ message: response.message });
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (error) {
       showErrorMessage({
         message:
           error instanceof Error
-            ? error.message
+            ? error?.message
             : "Something went wrong. Please try later",
       });
     }
@@ -42,6 +48,13 @@ const ForgotPassword = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Forgot Password</title>
+        <meta
+          name="discription"
+          content="Forgot Password page of this project"
+        />
+      </Helmet>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box title="Forgot Password" gap={30}>
           <Input
