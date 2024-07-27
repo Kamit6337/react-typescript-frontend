@@ -6,10 +6,11 @@ import Box from "@/components/custom/Box";
 import Input from "@/components/custom/Input";
 import { Button } from "@/components/ui/button";
 import Loading from "@/lib/Loading";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { postAuthReq } from "@/utils/api/authApi";
 import environment from "@/utils/environment";
 import { Helmet } from "react-helmet";
+import { useEffect } from "react";
 
 const schema = z.object({
   email: z.string().min(1, "Email must me provided"),
@@ -19,6 +20,8 @@ const schema = z.object({
 const Login = () => {
   const navigate = useNavigate();
   const { showErrorMessage } = Toastify();
+
+  const msg = useSearchParams()[0].get("msg");
 
   const {
     register,
@@ -31,6 +34,12 @@ const Login = () => {
       password: "",
     },
   });
+
+  useEffect(() => {
+    if (msg) {
+      showErrorMessage({ message: msg });
+    }
+  }, []);
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {

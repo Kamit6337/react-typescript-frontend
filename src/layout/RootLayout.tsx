@@ -8,22 +8,22 @@ const RootLayout = () => {
   const navigate = useNavigate();
   const { isLoading, error, isSuccess } = useLoginCheck();
 
-  // useEffect(() => {
-  //   if (error) {
-  //     navigate(`/login?msg=${error.message}`);
-  //     return;
-  //   }
-  // }, [error, navigate]);
+  useEffect(() => {
+    if (error) {
+      navigate(`/login?msg=${error.message}`);
+      return;
+    }
+  }, [error, navigate]);
 
   if (isLoading) {
     return <Loading hScreen={true} small={false} />;
   }
 
-  // if (!isSuccess) return;
+  if (!isSuccess) return;
 
   return (
     <>
-      <div className="h-16 w-full bg-dark_blue text-light_white">
+      <div className="h-16 w-full bg-primary text-primary-foreground">
         <Header />
       </div>
       <Outlet />

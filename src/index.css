@@ -71,6 +71,10 @@
 }
 
 @layer utilities {
+  .section_padding {
+    @apply px-10 md:px-20;
+  }
+
   .btn_google_oauth {
     @apply mt-10 w-full flex justify-center items-center bg-primary text-primary-foreground hover:bg-primary/90 rounded-md text-sm font-medium h-10 cursor-pointer;
   }

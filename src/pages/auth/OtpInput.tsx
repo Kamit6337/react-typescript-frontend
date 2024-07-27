@@ -1,5 +1,5 @@
 "use client";
-import { type ChangeEvent, useRef } from "react";
+import { type ChangeEvent, useEffect, useRef } from "react";
 
 const OtpInput = ({
   otp,
@@ -9,6 +9,12 @@ const OtpInput = ({
   cb: (value: string[]) => void;
 }) => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    if (inputRefs.current?.length > 0) {
+      inputRefs.current[0]?.focus();
+    }
+  }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     const value = e.target.value;
